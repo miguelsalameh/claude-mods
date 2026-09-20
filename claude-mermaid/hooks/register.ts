@@ -1,15 +1,17 @@
-import type { Register } from 'claude-code'
+import type { Register, RenderElement } from 'claude-code'
 import {
-  ANSI_PALETTE,
+  THEME_PALETTE,
   ansiLineOf,
   fitLines,
   inlineTextOf,
   leftToRightOf,
   mermaidBlocksOf,
+  partsOf,
   pickLayout,
   renderOf,
   withoutPseudoStates,
   type Rendered,
+  type Segment,
 } from './diagrams.ts'
 
 // Every ```mermaid block Claude writes is drawn as box art where the fence
@@ -20,6 +22,8 @@ const COMMAND = 'mermaid'
 const PREFS_KEY = 'prefs'
 // the transcript's code block has a gutter and margins the art must clear
 const INLINE_MARGIN = 6
+// MarkdownProps caps a block's text; a longer message keeps the plain text path
+const MARKDOWN_MAX_CHARS = 10000
 
 type Prefs = { ascii: boolean; color: boolean; lr: boolean }
 const DEFAULT_PREFS: Prefs = { ascii: false, color: true, lr: true }
@@ -71,17 +75,42 @@ export const register: Register = on => {
     const blocks = mermaidBlocksOf(e.props.text)
     if (blocks.length === 0) return next(e)
     const columns = (e.viewport?.columns ?? 80) - INLINE_MARGIN
-    // colours ride on ANSI escapes in the drawn code block; only the terminal reads them
-    const palette = prefs.color && e.surface === 'terminal' ? ANSI_PALETTE : null
-    const text = inlineTextOf(e.props.text, blocks, block => {
+    const artLinesOf = (block: (typeof blocks)[number]): Segment[][] | null => {
       const room = columns - block.indent.length
       const art = drawn(block.source, room)
       if (!('lines' in art)) return null
       const fit = fitLines(art.lines, room)
-      const lines = fit.lines.map(line => ansiLineOf(line, palette))
-      if (fit.overflow > 0) lines.push(ansiLineOf([{ text: `… ${fit.overflow} columns cut · widen the terminal`, role: 'line' }], palette))
+      const lines = fit.lines
+      if (fit.overflow > 0) lines.push([{ text: `… ${fit.overflow} columns cut · widen the terminal`, role: 'line' }])
       return lines
-    })
+    }
+    // Colours are element props, never escapes: the transcript's text refuses
+    // control characters, so a coloured diagram is a tree of coloured Texts,
+    // the prose around it drawn as Markdown. Plain art still rides in the text.
+    if (prefs.color && e.surface === 'terminal') {
+      const parts = partsOf(e.props.text, blocks, artLinesOf)
+      if (parts.every(part => part.kind !== 'markdown' || part.text.length <= MARKDOWN_MAX_CHARS)) {
+        const { Box, Text, Markdown } = $.ui.resolve(e)
+        const children: RenderElement[] = parts.map(part => {
+          if (part.kind === 'markdown') return Markdown({ text: part.text })
+          const rows = part.lines.map(line =>
+            Text({
+              wrap: 'truncate',
+              children: [
+                part.indent,
+                ...line.map(({ text, role }) => {
+                  const style = role ? THEME_PALETTE[role] : {}
+                  return Text({ color: style.color, dimColor: style.dim, children: text })
+                }),
+              ],
+            }),
+          )
+          return Box({ flexDirection: 'column', children: rows })
+        })
+        return Box({ flexDirection: 'column', children })
+      }
+    }
+    const text = inlineTextOf(e.props.text, blocks, block => artLinesOf(block)?.map(line => ansiLineOf(line, null)) ?? null)
     return next({ ...e, props: { ...e.props, text } })
   })
 

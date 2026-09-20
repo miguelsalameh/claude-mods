@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  partsOf,
   ANSI_PALETTE,
   ansiLineOf,
   fitLines,
@@ -279,5 +280,37 @@ describe('pickLayout', () => {
     const [base] = both(td)
     expect(pickLayout(base, { error: 'x' }, 100)).toBe(base)
     expect(pickLayout({ error: 'x' }, base, 100)).toEqual({ error: 'x' })
+  })
+})
+
+describe('partsOf', () => {
+  const block = (text: string) => mermaidBlocksOf(text)
+  const art = () => [[{ text: '┌─┐', role: 'border' as const }]]
+
+  test('splits prose from drawn art, trimming blank edges of the prose', () => {
+    const text = 'Before.\n\n```mermaid\nflowchart LR\n  A --> B\n```\n\nAfter.'
+    const parts = partsOf(text, block(text), art)
+    expect(parts).toEqual([
+      { kind: 'markdown', text: 'Before.' },
+      { kind: 'art', indent: '', lines: art() },
+      { kind: 'markdown', text: 'After.' },
+    ])
+  })
+
+  test('a block that does not render keeps its fence inside the markdown', () => {
+    const text = 'Before.\n\n```mermaid\ngantt\n  x\n```\n\nAfter.'
+    const parts = partsOf(text, block(text), () => null)
+    expect(parts).toEqual([{ kind: 'markdown', text: 'Before.\n\n```mermaid\ngantt\n  x\n```\n\nAfter.' }])
+  })
+
+  test('a fence inside a list item carries its indentation', () => {
+    const text = '- step\n  ```mermaid\n  flowchart LR\n    A --> B\n  ```\n- next'
+    const parts = partsOf(text, block(text), art)
+    expect(parts[1]).toEqual({ kind: 'art', indent: '  ', lines: art() })
+  })
+
+  test('a message that is only a diagram is one art part', () => {
+    const text = '```mermaid\nflowchart LR\n  A --> B\n```'
+    expect(partsOf(text, block(text), art)).toEqual([{ kind: 'art', indent: '', lines: art() }])
   })
 })

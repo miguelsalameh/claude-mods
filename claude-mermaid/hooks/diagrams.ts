@@ -247,3 +247,50 @@ export const inlineTextOf = (
   }
   return out + text.slice(cursor)
 }
+
+// The message split into what is drawn as markdown and what is drawn as art,
+// for a hook that returns a tree instead of rewriting the text: every mermaid
+// fence with art becomes an `art` part (its lines still role-tagged, so each
+// run can take its colour as an element prop rather than an ANSI escape, which
+// the transcript's text refuses); the text between, and any fence that did not
+// render, stays markdown. Adjacent markdown is merged and blank-only edges
+// dropped, so the tree has no empty rows
+export type MessagePart =
+  | { kind: 'markdown'; text: string }
+  | { kind: 'art'; indent: string; lines: Segment[][] }
+
+export const partsOf = (
+  text: string,
+  blocks: readonly MermaidBlock[],
+  artOf: (block: MermaidBlock) => Segment[][] | null,
+): MessagePart[] => {
+  const parts: MessagePart[] = []
+  const markdown = (chunk: string) => {
+    if (chunk.trim() === '') return
+    const last = parts[parts.length - 1]
+    if (last && last.kind === 'markdown') last.text += chunk
+    else parts.push({ kind: 'markdown', text: chunk })
+  }
+  let cursor = 0
+  for (const block of blocks) {
+    const art = artOf(block)
+    markdown(text.slice(cursor, block.start))
+    if (art) parts.push({ kind: 'art', indent: block.indent, lines: art })
+    else markdown(text.slice(block.start, block.end))
+    cursor = block.end
+  }
+  markdown(text.slice(cursor))
+  for (const part of parts) if (part.kind === 'markdown') part.text = part.text.replace(/^\n+|\n+$/g, '')
+  return parts
+}
+
+/** Ink colour names per role for the terminal's own 16-colour theme; `dim` marks a dimmed run */
+export const THEME_PALETTE: Readonly<Record<Role, { color?: string; dim?: boolean }>> = {
+  text: {},
+  border: { color: 'cyan' },
+  line: { dim: true },
+  arrow: { color: 'yellow' },
+  corner: { dim: true },
+  junction: { color: 'cyan' },
+  accent: { color: 'magenta' },
+}

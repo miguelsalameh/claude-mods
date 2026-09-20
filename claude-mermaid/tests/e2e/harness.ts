@@ -112,7 +112,7 @@ const startProxy = async (target: string) => {
         })
         response.writeHead(
           upstream.status,
-          Object.fromEntries([...upstream.headers].filter(([key]) => key !== 'content-length' && key !== 'content-encoding')),
+          Object.fromEntries([...upstream.headers].filter(([key]) => key !== 'content-length' && key !== 'content-encoding' && key !== 'transfer-encoding')),
         )
         // written chunk by chunk: the mock's pacing is what makes a turn long
         if (upstream.body) for await (const chunk of upstream.body as any) response.write(Buffer.from(chunk))
@@ -151,7 +151,7 @@ export type SessionOptions = {
 }
 
 export async function startSession(fixtures: Fixture[], options: SessionOptions = {}): Promise<Session> {
-  const { columns = 170, rows = 80, fullscreen = false, latency, chunkSize, pluginDir = REPO, cwd = REPO, settings } = options
+  const { columns = 170, rows = 80, fullscreen = false, latency, chunkSize, pluginDir = REPO, cwd = REPO, settings = process.env.MERMAID_E2E_SETTINGS } = options
   const mock = new LLMock({ port: 0, latency, chunkSize })
   for (const { prompt, reply, tool, lead, when } of fixtures) {
     const also = when ? { predicate: when } : {}
