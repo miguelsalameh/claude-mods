@@ -8,6 +8,7 @@ runs inside Claude Code's own process. Early access, so each needs
 | --- | --- |
 | [claude-mermaid](claude-mermaid/README.md) | every ```` ```mermaid ```` block Claude writes is drawn as box art inline in the transcript |
 | [claude-queue](claude-queue/README.md) | `/q <text>` while Claude is working waits in a stack above the prompt and goes out when the turn ends |
+| [claude-statusline](claude-statusline/README.md) | a status line script: model, task, git branch, context bar, tokens, 5h and weekly plan usage |
 
 ## Install
 
