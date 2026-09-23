@@ -1,0 +1,6 @@
+{
+  "description": "claude-quote: text of Claude's that lands on the clipboard (a highlight in the fullscreen terminal) is offered as a quote above the prompt. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; builds without function hooks ignore the modules key.",
+  "modules": [
+    "./register.ts"
+  ]
+}

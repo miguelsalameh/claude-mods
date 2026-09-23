@@ -1,0 +1,33 @@
+{
+  "name": "claude-quote",
+  "version": "0.1.0",
+  "description": "Highlight something Claude said and a quote chip appears above the prompt: one click puts it in the prompt box as a > quote, ready to reference. Needs function hooks (early access), the fullscreen terminal (copy on select) and a clipboard tool (pbpaste, wl-paste or xclip).",
+  "author": {
+    "name": "Miguel Salameh"
+  },
+  "homepage": "https://github.com/miguelsalameh/claude-mods/tree/main/claude-quote",
+  "repository": "https://github.com/miguelsalameh/claude-mods",
+  "license": "MIT",
+  "keywords": [
+    "quote",
+    "selection",
+    "prompt",
+    "terminal",
+    "function-hooks",
+    "mod"
+  ],
+  "userConfig": {
+    "reader": {
+      "type": "string",
+      "title": "Clipboard command",
+      "description": "The command that prints the clipboard, words split on spaces (say `tmux save-buffer -`). Empty: the first of pbpaste, wl-paste and xclip that answers.",
+      "default": ""
+    },
+    "timeout": {
+      "type": "number",
+      "title": "Seconds the quote card stays up",
+      "description": "The card goes on its own after this many seconds. 0 keeps it until you quote, dismiss it, copy something else or send a prompt.",
+      "default": 10
+    }
+  }
+}
