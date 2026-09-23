@@ -1,0 +1,32 @@
+{
+  "name": "claude-open",
+  "version": "0.1.0",
+  "description": "Click a file path in one of Claude's replies and it opens in a herdr pane to the right: markdown in leaf, anything else in $EDITOR, one pane reused. Needs function hooks (early access) and the fullscreen terminal (clicks); outside herdr it falls back to `open`.",
+  "author": {
+    "name": "Miguel Salameh"
+  },
+  "homepage": "https://github.com/miguelsalameh/claude-mods/tree/main/claude-open",
+  "repository": "https://github.com/miguelsalameh/claude-mods",
+  "license": "MIT",
+  "keywords": ["open", "file", "herdr", "leaf", "markdown", "function-hooks", "mod"],
+  "userConfig": {
+    "viewers": {
+      "type": "string",
+      "title": "Viewers by extension",
+      "description": "JSON object, extension to shell command, {file} and {line} filled in, `*` for the rest. Merged over the defaults: {\"md\": \"leaf -w {file}\", \"*\": \"${EDITOR:-vi} +{line} {file}\"}.",
+      "default": ""
+    },
+    "focus": {
+      "type": "boolean",
+      "title": "Focus the viewer pane",
+      "description": "Move the keyboard to the new pane when a file opens. Off: the focus stays on Claude.",
+      "default": false
+    },
+    "herdr": {
+      "type": "string",
+      "title": "herdr command",
+      "description": "The herdr executable to call; `herdr` on PATH when empty.",
+      "default": ""
+    }
+  }
+}

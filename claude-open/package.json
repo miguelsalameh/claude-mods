@@ -1,0 +1,17 @@
+{
+  "name": "claude-open",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Claude Code mod: click a file path in a reply and it opens in a herdr pane to the right, markdown in leaf",
+  "scripts": {
+    "test": "bun test tests/unit",
+    "test:e2e": "bun test tests/e2e",
+    "typecheck": "bunx -p typescript tsc -p . && bunx -p typescript tsc -p tsconfig.test.json",
+    "validate": "claude plugin validate .claude-plugin/plugin.json && claude plugin validate ."
+  },
+  "devDependencies": {
+    "@copilotkit/aimock": "1.42.0",
+    "@types/bun": "^1.4.2"
+  }
+}

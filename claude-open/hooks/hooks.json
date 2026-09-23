@@ -1,0 +1,6 @@
+{
+  "description": "claude-open: file paths in Claude's replies are drawn as links, and a click opens the file in a herdr pane to the right. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; builds without function hooks ignore the modules key.",
+  "modules": [
+    "./register.ts"
+  ]
+}
