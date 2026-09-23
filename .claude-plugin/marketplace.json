@@ -3,7 +3,7 @@
   "owner": {
     "name": "Gal Elmalah"
   },
-  "description": "Mods for Claude Code by Gal: mermaid diagrams drawn inline in the transcript; /q holds a prompt until the turn ends.",
+  "description": "Mods for Claude Code by Gal: mermaid diagrams drawn inline in the transcript; /q holds a prompt until the turn ends; highlight a reply to quote it in the prompt; click a path to open it beside the session.",
   "plugins": [
     {
       "name": "claude-mermaid",
@@ -14,6 +14,16 @@
       "name": "claude-queue",
       "source": "./claude-queue",
       "description": "/q <text> while Claude is working waits in a stack above the prompt and goes out when the turn ends."
+    },
+    {
+      "name": "claude-quote",
+      "source": "./claude-quote",
+      "description": "Highlight what Claude said and click once: it is quoted in the prompt box."
+    },
+    {
+      "name": "claude-open",
+      "source": "./claude-open",
+      "description": "Click a file path in a reply: it opens in a herdr pane to the right, markdown in leaf."
     }
   ]
 }
