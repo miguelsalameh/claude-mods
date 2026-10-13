@@ -1,0 +1,19 @@
+{
+  "name": "claude-leaf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Claude Code mod: read, edit and annotate markdown in a leaf-styled pane beside the chat, mermaid drawn as box art",
+  "scripts": {
+    "build:vendor": "node scripts/build-vendor.mjs",
+    "test": "bun test tests/unit",
+    "test:e2e": "bun test tests/e2e",
+    "typecheck": "bunx -p typescript tsc -p . && bunx -p typescript tsc -p tsconfig.test.json",
+    "validate": "claude plugin validate .claude-plugin/plugin.json && claude plugin validate ."
+  },
+  "devDependencies": {
+    "@copilotkit/aimock": "1.42.0",
+    "@types/bun": "^1.4.2",
+    "esbuild": "^0.25.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "claude-leaf",
+  "version": "0.1.0",
+  "description": "Read, edit and annotate markdown in a pane beside the chat, drawn like leaf: headings, tables, code frames, mermaid as box art, a TOC, search, a file picker and leaf's themes. Notes on lines go to the prompt box. Needs function hooks (early access).",
+  "author": {
+    "name": "Miguel Salameh"
+  },
+  "homepage": "https://github.com/miguelsalameh/claude-mods/tree/main/claude-leaf",
+  "repository": "https://github.com/miguelsalameh/claude-mods",
+  "license": "MIT",
+  "keywords": ["markdown", "leaf", "viewer", "editor", "annotate", "mermaid", "function-hooks", "mod"],
+  "userConfig": {
+    "theme": {
+      "type": "string",
+      "title": "Theme",
+      "description": "catppuccin-mocha, catppuccin-macchiato, catppuccin-frappe, catppuccin-latte, ocean, arctic, forest or solarized-dark. Empty: LEAF_THEME, then theme in ~/.config/leaf/config.toml, then catppuccin-mocha.",
+      "default": ""
+    }
+  }
+}

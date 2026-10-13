@@ -11,6 +11,7 @@ runs inside Claude Code's own process. Early access, so each needs
 | [claude-statusline](claude-statusline/README.md) | a status line script: model, task, git branch, context bar, tokens, 5h and weekly plan usage |
 | [claude-quote](claude-quote/README.md) | highlight something Claude said and click `[ quote ]`: it lands in the prompt box as a `>` quote |
 | [claude-open](claude-open/README.md) | click a file path in a reply and it opens in a herdr pane to the right: markdown in leaf, the rest in `$EDITOR` |
+| [claude-leaf](claude-leaf/README.md) | `/leaf <file>`: read, edit and annotate markdown in a leaf-styled pane beside the chat, mermaid drawn as box art |
 
 ## Install
 
@@ -28,6 +29,7 @@ claude plugin install claude-mermaid@claude-mods
 claude plugin install claude-queue@claude-mods
 claude plugin install claude-quote@claude-mods
 claude plugin install claude-open@claude-mods
+claude plugin install claude-leaf@claude-mods
 ```
 
 Or load one straight from a clone, for one session (the repo's own
@@ -40,6 +42,7 @@ claude --plugin-dir claude-mermaid
 claude --plugin-dir claude-queue
 claude --plugin-dir claude-quote
 claude --plugin-dir claude-open
+claude --plugin-dir claude-leaf
 ```
 
 ## Layout

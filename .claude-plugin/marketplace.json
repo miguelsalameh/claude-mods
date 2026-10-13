@@ -3,7 +3,7 @@
   "owner": {
     "name": "Gal Elmalah"
   },
-  "description": "Mods for Claude Code by Gal: mermaid diagrams drawn inline in the transcript; /q holds a prompt until the turn ends; highlight a reply to quote it in the prompt; click a path to open it beside the session.",
+  "description": "Mods for Claude Code by Gal: mermaid diagrams drawn inline in the transcript; /q holds a prompt until the turn ends; highlight a reply to quote it in the prompt; click a path to open it beside the session; read, edit and annotate markdown in a leaf-styled pane.",
   "plugins": [
     {
       "name": "claude-mermaid",
@@ -24,6 +24,11 @@
       "name": "claude-open",
       "source": "./claude-open",
       "description": "Click a file path in a reply: it opens in a herdr pane to the right, markdown in leaf."
+    },
+    {
+      "name": "claude-leaf",
+      "source": "./claude-leaf",
+      "description": "Read, edit and annotate markdown in a leaf-styled pane beside the chat; mermaid as box art; notes go to the prompt box."
     }
   ]
 }

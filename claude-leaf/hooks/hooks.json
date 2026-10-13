@@ -1,0 +1,6 @@
+{
+  "description": "claude-leaf: /leaf <file> opens a markdown file in a leaf-styled pane beside the transcript, to read, edit and annotate; notes go to the prompt box. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; builds without function hooks ignore the modules key.",
+  "modules": [
+    "./register.ts"
+  ]
+}
