@@ -583,6 +583,8 @@ export const keyOf = (ctx: Ctx, prev: State, k: Key): Out => {
     }
     case 'x':
       return out({ sel: null, anchor: null })
+    case 'a':
+      return st.sel ? out({}, { type: 'ask', a: st.sel.a, b: st.sel.b }) : out({})
     case 's':
       return st.notes.length ? out({}, { type: 'send' }) : out({})
     case 't': {
@@ -612,6 +614,9 @@ export const keyOf = (ctx: Ctx, prev: State, k: Key): Out => {
       return out({ mode: 'picker', input: '', pickAt: 0 }, { type: 'pick', query: '' })
     case 'e':
       return out({}, { type: 'edit', line: st.sel ? st.sel.a : topRowSrc(ctx, st), rows: ctx.body })
+    case 'q':
+    case 'Q':
+      return out({}, { type: 'close' })
   }
   return out({})
 }

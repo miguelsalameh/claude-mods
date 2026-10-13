@@ -17,6 +17,20 @@ export const lineCountOf = (lines: readonly string[]): number =>
 
 export const nameOf = (path: string): string => path.split('/').pop() || path
 
+/** the folder `path` is in, as the title shows it: relative to `cwd`, else `~/`, else absolute; '' for the cwd itself */
+export const dirOf = (path: string, cwd: string, home?: string): string => {
+  const dir = path.slice(0, path.lastIndexOf('/') + 1)
+  const under = (root: string) => {
+    const r = root.replace(/\/$/, '') + '/'
+    return dir.startsWith(r) ? dir.slice(r.length) : null
+  }
+  const inCwd = cwd ? under(cwd) : null
+  if (inCwd !== null) return inCwd
+  const inHome = home ? under(home) : null
+  if (inHome !== null) return `~/${inHome}`
+  return dir
+}
+
 /** the markdown file a Read, Write or Edit call touches, else null */
 export const markdownPathOf = (tool: string, input: unknown): string | null => {
   if (tool !== 'Read' && tool !== 'Write' && tool !== 'Edit') return null

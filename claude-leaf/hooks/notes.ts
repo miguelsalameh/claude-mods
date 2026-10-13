@@ -24,6 +24,10 @@ export const promptOf = (path: string, lines: readonly string[], notes: readonly
   return [`Notes on ${path}:`, ...blocks].join('\n\n')
 }
 
+/** a selection quoted for a question: the person types the question after it */
+export const askOf = (path: string, lines: readonly string[], a: number, b: number): string =>
+  `About ${path} ${rangeOf({ a, b, text: '', quote: [] })}:\n${quoteOf(lines.slice(a, b + 1)).join('\n')}\n\n`
+
 const RADIUS = 200
 
 const matchesAt = (lines: readonly string[], at: number, quote: readonly string[]): boolean => {

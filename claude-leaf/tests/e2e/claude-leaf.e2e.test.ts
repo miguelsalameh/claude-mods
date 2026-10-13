@@ -175,7 +175,7 @@ describe.skipIf(!ready)('claude-leaf in Claude Code', () => {
   test('/leaf alone in a fresh working directory opens the picker over its markdown files; typing filters', async () => {
     await command('/leaf')
     await s.waitFor('pick a markdown file', 10_000)
-    const listed = await waitPane('other/notes.md')
+    const listed = await waitPane(/^ *other\/notes\.md(?! ·)/m)
     for (const file of ['doc.md', 'readme.md', 'big.md']) expect(listed).toContain(file)
     await focusPane()
     await press('n', 'o', 't')
@@ -206,7 +206,7 @@ describe.skipIf(!ready)('claude-leaf in Claude Code', () => {
   test('/leaf . lists the whole working directory again', async () => {
     await command('/leaf .')
     await s.waitFor('pick a markdown file under', 10_000)
-    const listed = await waitPane('other/notes.md')
+    const listed = await waitPane(/^ *other\/notes\.md(?! ·)/m)
     expect(listed).toContain('readme.md')
   }, T)
 

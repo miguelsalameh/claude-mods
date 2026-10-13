@@ -12,7 +12,7 @@ const rowsOf = (n: number): Row[] => Array.from({ length: n }, (_, i) => ({ src:
 const propsOf = (over: Partial<ViewerProps> = {}): ViewerProps => {
   const rows = over.rows ?? rowsOf(100)
   return {
-    path: '/doc.md', name: 'doc.md', theme: 'ocean', total: rows.length, srcTotal: rows.length, start: 0, rows,
+    path: '/doc.md', name: 'doc.md', dir: '', theme: 'ocean', total: rows.length, srcTotal: rows.length, start: 0, rows,
     toc: [], height: 12, notes: [], notesVersion: 0, version: 0, edit: null, lastEditLine: 0, readOnly: false,
     status: null, statusVersion: 0, pickerVersion: 0, conflict: false, changedOnDisk: false, dirty: false, search: null, picker: null, wheel: 0, error: null,
     ...over,
@@ -262,6 +262,15 @@ describe('view keys', () => {
     expect(press(ctx, { ...st, sel: { a: 1, b: 1 } }, 'x').state.sel).toBeNull()
     expect(press(ctx, st, 's').posts).toEqual([])
     expect(press(ctx, { ...st, notes: [note(0, 0, 'a')] }, 's').posts).toEqual([{ type: 'send' }])
+  })
+
+  test('a quotes the selection for a question, nothing without one', () => {
+    expect(press(ctx, st, 'a').posts).toEqual([])
+    expect(press(ctx, { ...st, sel: { a: 1, b: 2 } }, 'a').posts).toEqual([{ type: 'ask', a: 1, b: 2 }])
+  })
+
+  test('q asks to close the pane', () => {
+    expect(press(ctx, st, 'q').posts).toEqual([{ type: 'close' }])
   })
 
   test('e asks for edit mode at the selection or the top row', () => {

@@ -20,7 +20,7 @@ const diagram: Diagram = (source, width) => {
 const sizeOf = (text: string, columns: number, height: number, theme: ViewerProps['theme']): number => {
   const { rows, toc } = layoutOf(text, { width: columns - 6, diagram })
   const props: ViewerProps = {
-    path: '/x.md', name: 'x.md', theme, total: rows.length, srcTotal: text.split('\n').length, start: 0, rows: rows.slice(0, 300),
+    path: '/x.md', name: 'x.md', dir: '', theme, total: rows.length, srcTotal: text.split('\n').length, start: 0, rows: rows.slice(0, 300),
     toc, height, notes: [], notesVersion: 0, version: 0, edit: null, lastEditLine: 0, readOnly: false, status: null, statusVersion: 0, pickerVersion: 0,
     conflict: false, dirty: false, changedOnDisk: false, search: null, picker: null, wheel: 0, error: null,
   }

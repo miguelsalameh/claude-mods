@@ -1,7 +1,15 @@
 import { describe, expect, test } from 'bun:test'
-import { editViewOf, fitProps, hitsAround, isMarkdown, lineCountOf, markdownPathOf, resolvePath, tocAround, windowStart } from '../../hooks/doc.ts'
+import { dirOf, editViewOf, fitProps, hitsAround, isMarkdown, lineCountOf, markdownPathOf, resolvePath, tocAround, windowStart } from '../../hooks/doc.ts'
 import type { Buffer } from '../../hooks/editor.ts'
 import type { Row, TocEntry, ViewerProps } from '../../hooks/types.ts'
+
+describe('dirOf', () => {
+  test('in the cwd: nothing', () => expect(dirOf('/w/a.md', '/w')).toBe(''))
+  test('under the cwd: relative', () => expect(dirOf('/w/docs/a.md', '/w/')).toBe('docs/'))
+  test('outside the cwd, under home: ~/', () => expect(dirOf('/Users/me/notes/a.md', '/w', '/Users/me')).toBe('~/notes/'))
+  test('a sibling of the cwd is not under it', () => expect(dirOf('/w2/a.md', '/w')).toBe('/w2/'))
+  test('elsewhere: absolute', () => expect(dirOf('/etc/a.md', '/w', '/Users/me')).toBe('/etc/'))
+})
 
 describe('resolvePath', () => {
   test('absolute passes through', () => expect(resolvePath('/w', '/a/b.md')).toBe('/a/b.md'))
@@ -70,7 +78,7 @@ test('editViewOf windows from top', () => {
 describe('fitProps', () => {
   const rows: Row[] = Array.from({ length: 5000 }, (_, src) => ({ src, spans: [{ t: 'x'.repeat(200), s: 'b' }] }))
   const base = (): Omit<ViewerProps, 'rows' | 'start' | 'toc' | 'edit' | 'search'> => ({
-    path: '/a.md', name: 'a.md', theme: 'ocean', total: rows.length, srcTotal: rows.length, height: 40,
+    path: '/a.md', name: 'a.md', dir: '', theme: 'ocean', total: rows.length, srcTotal: rows.length, height: 40,
     notes: [], notesVersion: 0, version: 1, lastEditLine: 0, readOnly: false, status: null, statusVersion: 0, pickerVersion: 0,
     conflict: false, dirty: false, changedOnDisk: false, picker: null, wheel: 0, error: null,
   })

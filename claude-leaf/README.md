@@ -65,6 +65,7 @@ Click in the pane to give it the keyboard; Esc gives it back to Claude.
 | `g` `Home`, `G` `End` | top, bottom |
 | click, drag, shift-click | select a line, a range |
 | `Enter` `c` | write (or edit) a note on the selection |
+| `a` | ask about the selection: quotes it in the prompt box, you type the question |
 | `d` | delete the note |
 | `x` | clear the selection |
 | `s` | send the notes to the prompt box |
@@ -72,6 +73,7 @@ Click in the pane to give it the keyboard; Esc gives it back to Claude.
 | `/` | search; `n` `N` next, previous |
 | `o` | file picker (over the last `/leaf <dir>`, else the working directory): type to filter, `Enter` opens, `Tab` goes back to the file |
 | `e` | edit the source at the selection |
+| `q` | close the pane |
 
 In edit mode the raw markdown is under a cursor: type, `ctrl+s` saves,
 `ctrl+z` undoes, `ctrl+e` goes back to the rendered view (asking to save or

@@ -1,9 +1,9 @@
 import type { Elements, EngineInterface, Register, RenderElement } from 'claude-code'
-import { editViewOf, fitProps, hitsAround, isMarkdown, lineCountOf, markdownPathOf, nameOf, resolvePath, tocAround, windowStart } from './doc.ts'
+import { dirOf, editViewOf, fitProps, hitsAround, isMarkdown, lineCountOf, markdownPathOf, nameOf, resolvePath, tocAround, windowStart } from './doc.ts'
 import { applyKey, bufferOf, textOf, type Buffer } from './editor.ts'
 import { rank, walk } from './files.ts'
 import { layoutOf } from './layout.ts'
-import { promptOf, reanchor } from './notes.ts'
+import { askOf, promptOf, reanchor } from './notes.ts'
 import { decideSave, hashOf } from './save.ts'
 import { matchesOf } from './search.ts'
 import { SCROLLBAR, WHEEL_ROWS, gutterWidth } from './viewer-state.ts'
@@ -48,6 +48,8 @@ type Edit = { buf: Buffer; base: string; confirmLeave: boolean; rows: number; ac
 
 /** the open file's path; '' while only the picker is up */
 let path = ''
+/** `path`'s folder as the title shows it */
+let dir = ''
 let doc: Doc | null = null
 let error: string | null = null
 let version = 0
@@ -141,6 +143,7 @@ const propsOf = (): ViewerProps => {
     return {
       path,
       name: path ? nameOf(path) : '',
+      dir: path ? dir : '',
       theme,
       total: rows.length,
       srcTotal: doc ? lineCountOf(doc.lines) : 0,
@@ -288,6 +291,7 @@ const open = async ($: EngineInterface, option: string | undefined, p: string, s
     layoutCache = null
   }
   path = p
+  dir = dirOf(p, await $.session.cwd(), await $.env.get('HOME').catch(() => undefined))
   picker = null
   pickerFiles = null
   conflict = false
@@ -357,6 +361,21 @@ const send = async ($: EngineInterface) => {
   notes = []
   notesVersion++
   $.ui.toast('leaf: notes are in the prompt box · Esc, then Enter sends them')
+}
+
+/** the lines `a`..`b` quoted after what is in the prompt box: the question follows */
+const ask = async ($: EngineInterface, a: number, b: number) => {
+  if (!doc) return
+  const draft = (await $.prompt.read()).text
+  const text = askOf(path, doc.lines, a, b)
+  const filled = await $.prompt
+    .fill(draft.trim() ? { text: `\n\n${text}`, mode: 'append' } : { text })
+    .catch(() => ({ isFilled: false }))
+  if (!filled.isFilled) {
+    $.ui.toast('leaf: the prompt box is busy')
+    return
+  }
+  $.ui.toast('leaf: quoted in the prompt box · Esc, then type your question')
 }
 
 // ---- edit mode ----
@@ -621,6 +640,9 @@ export const register: Register = (on, options) => {
       case 'send':
         await send($)
         break
+      case 'ask':
+        await ask($, data.a, data.b)
+        return {}
       case 'close':
         await $.ui.close({ id: PANE }).catch(() => undefined)
         return {}

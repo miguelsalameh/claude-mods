@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { promptOf, rangeOf, reanchor } from '../../hooks/notes.ts'
+import { askOf, promptOf, rangeOf, reanchor } from '../../hooks/notes.ts'
 import type { Note } from '../../hooks/types.ts'
 
 const note = (a: number, b: number, lines: string[], text = 'n'): Note => ({ a, b, text, quote: lines.slice(a, b + 1) })
@@ -71,5 +71,11 @@ describe('reanchor', () => {
     const copy = structuredClone(n)
     reanchor([n], old, ['q'])
     expect(n).toEqual(copy)
+  })
+})
+
+describe('askOf', () => {
+  test('the path, the range, the quote, room for the question', () => {
+    expect(askOf('/w/a.md', ['# T', 'one', 'two'], 1, 2)).toBe('About /w/a.md L2-3:\n> one\n> two\n\n')
   })
 })

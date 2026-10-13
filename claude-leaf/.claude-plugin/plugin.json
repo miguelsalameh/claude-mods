@@ -1,6 +1,6 @@
 {
   "name": "claude-leaf",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read, edit and annotate markdown in a pane beside the chat, drawn like leaf: headings, tables, code frames, mermaid as box art, a TOC, search, a file picker and leaf's themes. Notes on lines go to the prompt box. Needs function hooks (early access).",
   "author": {
     "name": "Miguel Salameh"

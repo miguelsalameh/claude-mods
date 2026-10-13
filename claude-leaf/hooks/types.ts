@@ -85,6 +85,8 @@ export type ViewerProps = {
   /** absolute path of the open file ('' while only the picker is up) */
   path: string
   name: string
+  /** the folder before `name` in the title: relative to the working directory, `~/`, or absolute */
+  dir: string
   theme: ThemeName
   /** rows the whole document lays out to */
   total: number
@@ -153,6 +155,8 @@ export type ViewerMessage =
   | { type: 'window'; top: number }
   | { type: 'notes'; notes: Note[] }
   | { type: 'send' }
+  /** quote source lines `a`..`b` into the prompt box, for a question about them */
+  | { type: 'ask'; a: number; b: number }
   | { type: 'close' }
   /** enter edit mode with the cursor on source line `line`; `rows`: the body's height */
   | { type: 'edit'; line: number; rows: number }

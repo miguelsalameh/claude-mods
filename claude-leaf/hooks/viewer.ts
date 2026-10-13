@@ -109,7 +109,14 @@ const viewer: ClientModule<ViewerProps, State> = (props, surface) => {
 
   // title row
   const lines = edit ? edit.total : props.srcTotal
-  rows.push(line([text(props.name || 'leaf', { ...look('h2'), bold: true }), text(` · ${plural(lines, 'line')}`, look('dim'))]))
+  // a long folder gives way from its start; the name and the count stay
+  rows.push(
+    line([
+      ...(props.dir ? [Text({ backgroundColor: page, ...look('dim'), wrap: 'truncate-start', children: [props.dir] })] : []),
+      keep(text(props.name || 'leaf', { ...look('h2'), bold: true })),
+      keep(text(` · ${plural(lines, 'line')}`, look('dim'))),
+    ]),
+  )
 
   // body
   if (edit) {
@@ -248,8 +255,8 @@ const viewer: ClientModule<ViewerProps, State> = (props, surface) => {
       state.mode === 'toc'
         ? 'j k move · Enter jump · t close'
         : state.sel
-          ? `${range(state.sel.a, state.sel.b)} · Enter note · d delete · x clear · e edit`
-          : `j k scroll · click select · / search · t toc · o files · e edit${state.notes.length ? ' · s send' : ''}`
+          ? `${range(state.sel.a, state.sel.b)} · Enter note · a ask · d delete · x clear · e edit`
+          : `j k scroll · click select · / search · t toc · o files · e edit${state.notes.length ? ' · s send' : ''} · q quit`
     footer = [
       text(mode, { ...accent, bold: true }),
       text(` · ${where.join(' · ')}`, dim),
