@@ -71,7 +71,7 @@ describe('fitProps', () => {
   const rows: Row[] = Array.from({ length: 5000 }, (_, src) => ({ src, spans: [{ t: 'x'.repeat(200), s: 'b' }] }))
   const base = (): Omit<ViewerProps, 'rows' | 'start' | 'toc' | 'edit' | 'search'> => ({
     path: '/a.md', name: 'a.md', theme: 'ocean', total: rows.length, srcTotal: rows.length, height: 40,
-    notes: [], notesVersion: 0, version: 1, lastEditLine: 0, readOnly: false, status: null, statusVersion: 0,
+    notes: [], notesVersion: 0, version: 1, lastEditLine: 0, readOnly: false, status: null, statusVersion: 0, pickerVersion: 0,
     conflict: false, dirty: false, changedOnDisk: false, picker: null, wheel: 0, error: null,
   })
   test('shrinks the row window until it fits', () => {

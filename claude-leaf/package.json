@@ -1,6 +1,6 @@
 {
   "name": "claude-leaf",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Claude Code mod: read, edit and annotate markdown in a leaf-styled pane beside the chat, mermaid drawn as box art",

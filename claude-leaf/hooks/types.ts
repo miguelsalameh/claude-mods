@@ -117,6 +117,8 @@ export type ViewerProps = {
   changedOnDisk: boolean
   search: { query: string; hits: SearchHit[] } | null
   picker: { query: string; items: string[] } | null
+  /** bumped each time the hooks module opens the picker: the pane shows it even over an open file */
+  pickerVersion: number
   /**
    * mouse-wheel ticks over the pane since it opened, summed (negative toward
    * the top). The pane applies the difference from the total it last saw, so

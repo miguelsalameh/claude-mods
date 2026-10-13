@@ -14,7 +14,7 @@ const propsOf = (over: Partial<ViewerProps> = {}): ViewerProps => {
   return {
     path: '/doc.md', name: 'doc.md', theme: 'ocean', total: rows.length, srcTotal: rows.length, start: 0, rows,
     toc: [], height: 12, notes: [], notesVersion: 0, version: 0, edit: null, lastEditLine: 0, readOnly: false,
-    status: null, statusVersion: 0, conflict: false, changedOnDisk: false, dirty: false, search: null, picker: null, wheel: 0, error: null,
+    status: null, statusVersion: 0, pickerVersion: 0, conflict: false, changedOnDisk: false, dirty: false, search: null, picker: null, wheel: 0, error: null,
     ...over,
   }
 }
@@ -316,6 +316,16 @@ describe('view keys', () => {
     const open = press(c, o.state, 'down', 'return')
     expect(open.posts).toEqual([{ type: 'open', path: 'b.md' }])
     expect(open.state.mode).toBe('view')
+  })
+
+  test('/leaf <dir> over an open file: a bumped pickerVersion puts the pane on the picker', () => {
+    const c = ctxOf(propsOf())
+    const s = settled(c)
+    expect(s.mode).toBe('view')
+    const asked = ctxOf(propsOf({ picker: { query: '', items: ['a.md'] }, pickerVersion: 1 }))
+    expect(syncOf(asked, s)!.state).toMatchObject({ mode: 'picker', input: '', pickAt: 0 })
+    // a fresh pane mounting after the ask opens on it too
+    expect(initialState(asked.props).mode).toBe('picker')
   })
 
   test('a paste types its text', () => {

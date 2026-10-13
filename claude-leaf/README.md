@@ -38,6 +38,8 @@ The pane docks beside the transcript in the fullscreen layout
 ## Open a file
 
 - `/leaf <path>` opens it (relative to the working directory, or `~/…`).
+- `/leaf <dir>` opens the file picker over that folder's markdown files;
+  `/leaf .` lists the whole working directory, even with a file open.
 - `/leaf` reopens the last file, or opens the file picker (click the pane,
   then type to filter).
 - `/leaf close` closes the pane.
@@ -68,7 +70,7 @@ Click in the pane to give it the keyboard; Esc gives it back to Claude.
 | `s` | send the notes to the prompt box |
 | `t` | table of contents: move, `Enter` jumps |
 | `/` | search; `n` `N` next, previous |
-| `o` | file picker: type to filter, `Enter` opens |
+| `o` | file picker (over the last `/leaf <dir>`, else the working directory): type to filter, `Enter` opens, `Tab` goes back to the file |
 | `e` | edit the source at the selection |
 
 In edit mode the raw markdown is under a cursor: type, `ctrl+s` saves,

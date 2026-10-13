@@ -188,6 +188,28 @@ describe.skipIf(!ready)('claude-leaf in Claude Code', () => {
     await waitPane('Another file.')
   }, T)
 
+  test('/leaf <dir> opens the picker over that folder; after opening a file, o lists it again', async () => {
+    await command('/leaf other')
+    await s.waitFor('pick a markdown file under other', 10_000)
+    await waitPane(/^notes\.md/m)
+    expect(pane().some(l => l.startsWith('readme.md'))).toBe(false)
+    await focusPane()
+    await press('Enter')
+    await waitPane(/notes\.md · \d+ lines/)
+    await press('o')
+    await waitPane(/^>$/m)
+    expect(pane().some(l => l.startsWith('notes.md'))).toBe(true)
+    await press('Tab')
+    await waitPane(/notes\.md · \d+ lines/)
+  }, T)
+
+  test('/leaf . lists the whole working directory again', async () => {
+    await command('/leaf .')
+    await s.waitFor('pick a markdown file under', 10_000)
+    const listed = await waitPane('other/notes.md')
+    expect(listed).toContain('readme.md')
+  }, T)
+
   test('/leaf doc.md draws it the way leaf does: H1 underline, mermaid box art, a table, a code frame', async () => {
     await command('/leaf doc.md')
     await s.waitFor('doc.md open in the pane', 10_000)

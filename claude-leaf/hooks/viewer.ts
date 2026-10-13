@@ -249,7 +249,7 @@ const viewer: ClientModule<ViewerProps, State> = (props, surface) => {
         ? 'j k move · Enter jump · t close'
         : state.sel
           ? `${range(state.sel.a, state.sel.b)} · Enter note · d delete · x clear · e edit`
-          : `j k scroll · click select · / search · t toc · o open · e edit${state.notes.length ? ' · s send' : ''}`
+          : `j k scroll · click select · / search · t toc · o files · e edit${state.notes.length ? ' · s send' : ''}`
     footer = [
       text(mode, { ...accent, bold: true }),
       text(` · ${where.join(' · ')}`, dim),

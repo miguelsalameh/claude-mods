@@ -32,6 +32,7 @@ export type State = {
   version: number
   path: string
   statusVersion: number
+  pickerVersion: number
   /** the status text is shown in the footer until the next key */
   showStatus: boolean
   /** props.edit was non-null at the last render */
@@ -274,12 +275,15 @@ export const editRowsOf = (edit: EditView, textWidth: number, count: number): Ed
   return out.slice(drop, drop + count)
 }
 
+/** a fresh pane opens on the picker: nothing open yet, or `/leaf <dir>` asked for it over an open file */
+const showsPicker = (p: ViewerProps): boolean => p.picker !== null && (p.path === '' || p.pickerVersion > 0)
+
 export const initialState = (p: ViewerProps): State => ({
   top: 0,
   sel: null,
   anchor: null,
-  mode: p.path === '' && p.picker ? 'picker' : 'view',
-  input: p.path === '' && p.picker ? p.picker.query : '',
+  mode: showsPicker(p) ? 'picker' : 'view',
+  input: showsPicker(p) ? p.picker!.query : '',
   noteSel: null,
   tocAt: 0,
   pickAt: 0,
@@ -290,6 +294,7 @@ export const initialState = (p: ViewerProps): State => ({
   version: p.version,
   path: p.path,
   statusVersion: p.statusVersion,
+  pickerVersion: p.pickerVersion,
   showStatus: p.status !== null,
   inEdit: p.edit !== null,
   lastEditLine: p.lastEditLine,
@@ -373,6 +378,10 @@ export const syncOf = (ctx: Ctx, prev: State): Out | null => {
   // keys the hooks module applied leave the queue (once: none left at or under `ack` after)
   if (p.edit && st.pending.some(q => q.seq <= p.edit!.ack)) set({ pending: st.pending.filter(q => q.seq > p.edit!.ack) })
 
+  if (st.pickerVersion !== p.pickerVersion) {
+    set({ pickerVersion: p.pickerVersion })
+    if (p.picker && !nowEdit) set({ mode: 'picker', input: p.picker.query, pickAt: 0, noteSel: null })
+  }
   if (p.path === '' && p.picker && st.mode !== 'picker' && !nowEdit) set({ mode: 'picker', input: p.picker.query, pickAt: 0 })
   if (st.mode === 'picker' && p.picker) {
     const at = clamp(st.pickAt, 0, Math.max(0, p.picker.items.length - 1))

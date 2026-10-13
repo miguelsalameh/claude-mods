@@ -67,10 +67,13 @@ let conflict = false
 let changedOnDisk = false
 let status: string | null = null
 let statusVersion = 0
+let pickerVersion = 0
 
 let search: { query: string; hits: SearchHit[] } | null = null
 let picker: { query: string; items: string[] } | null = null
-let pickerFiles: { cwd: string; files: string[] } | null = null
+let pickerFiles: { root: string; files: string[] } | null = null
+/** the folder the picker lists: the working directory unless `/leaf <dir>` named one; its paths are relative to it */
+let pickerRoot: string | null = null
 
 let theme: ThemeName = DEFAULT_THEME
 let contentWidth: number | null = null
@@ -153,6 +156,7 @@ const propsOf = (): ViewerProps => {
       readOnly: !!doc && doc.size > MAX_EDIT,
       status,
       statusVersion,
+      pickerVersion,
       conflict,
       dirty: !!edit?.buf.dirty,
       changedOnDisk,
@@ -314,9 +318,11 @@ const lastFile = async ($: EngineInterface): Promise<string | null> => {
 const openFrom = async ($: EngineInterface, option: string | undefined, arg: string, strict = false) =>
   open($, option, resolvePath(await $.session.cwd(), arg, await $.env.get('HOME').catch(() => undefined)), strict)
 
-/** the picker over the working directory's markdown files */
-const openPicker = async ($: EngineInterface, option: string | undefined) => {
+/** the picker over the markdown files under `root` (else the working directory) */
+const openPicker = async ($: EngineInterface, option: string | undefined, root: string | null = null) => {
   await resolveLook($, option)
+  pickerRoot = root
+  pickerVersion++
   picker = { query: '', items: [] }
   pickerFiles = null
   await pick($, '')
@@ -324,14 +330,14 @@ const openPicker = async ($: EngineInterface, option: string | undefined) => {
 }
 
 const pick = async ($: EngineInterface, query: string) => {
-  const cwd = await $.session.cwd()
+  const root = pickerRoot ?? (await $.session.cwd())
   // the walk runs once per picker opening: the opening (and a cleared query) sends ''
-  if (!pickerFiles || pickerFiles.cwd !== cwd || (query === '' && picker?.query !== '')) {
+  if (!pickerFiles || pickerFiles.root !== root || (query === '' && picker?.query !== '')) {
     try {
-      pickerFiles = { cwd, files: await walk(dir => $.fs.list(dir), cwd) }
+      pickerFiles = { root, files: await walk(dir => $.fs.list(dir), root) }
     } catch (err) {
-      pickerFiles = { cwd, files: [] }
-      setStatus(`cannot list ${cwd}: ${messageOf(err)}`)
+      pickerFiles = { root, files: [] }
+      setStatus(`cannot list ${root}: ${messageOf(err)}`)
     }
   }
   picker = { query, items: rank(pickerFiles.files, query, Math.max(50, viewerHeight)) }
@@ -505,8 +511,8 @@ export const register: Register = (on, options) => {
     await $.command
       .register({
         name: COMMAND,
-        description: 'Read, edit and annotate a markdown file in a pane: /leaf <file>, /leaf (last file or a picker), /leaf close (claude-leaf)',
-        argumentHint: '[path | close]',
+        description: 'Read, edit and annotate a markdown file in a pane: /leaf <file>, /leaf <dir> (pick from its files), /leaf (last file or a picker), /leaf close (claude-leaf)',
+        argumentHint: '[file | dir | close]',
         immediate: true,
       })
       .catch(err => $.ui.log(`leaf: /${COMMAND} not registered: ${err}`))
@@ -531,7 +537,16 @@ export const register: Register = (on, options) => {
       await $.ui.close({ id: PANE }).catch(() => undefined)
       return { text: 'leaf: closed' }
     }
-    if (arg) return { text: (await openFrom($, option, arg)).text }
+    if (arg) {
+      const target = resolvePath(await $.session.cwd(), arg, await $.env.get('HOME').catch(() => undefined))
+      const stat = await $.fs.stat(target).catch(() => null)
+      if (stat?.kind === 'dir') {
+        await openPicker($, option, target)
+        return { text: `leaf: pick a markdown file under ${nameOf(target)} · type to filter, Enter opens; o in the pane comes back here` }
+      }
+      pickerRoot = null
+      return { text: (await openFrom($, option, arg)).text }
+    }
     const last = path || (await lastFile($))
     if (last) return { text: (await open($, option, last)).text }
     await openPicker($, option)
@@ -541,6 +556,8 @@ export const register: Register = (on, options) => {
   on('ui.close', { id: PANE }, async ($, e, next) => {
     const r = await next(e)
     isOpen = false
+    // a picker over an open file closes with the pane: reopening shows the file
+    if (path) picker = null
     poll?.cancel()
     poll = null
     if (edit?.buf.dirty) $.ui.toast(`leaf: unsaved edits to ${nameOf(path)} kept · /leaf reopens them`)
@@ -623,7 +640,8 @@ export const register: Register = (on, options) => {
         await pick($, data.query)
         break
       case 'open':
-        await openFrom($, option, data.path)
+        // the pane is up and has the keys: opening it again would hand them back to the prompt
+        await open($, option, resolvePath(pickerRoot ?? (await $.session.cwd()), data.path), false, !isOpen)
         break
       case 'search': {
         const query = data.query
